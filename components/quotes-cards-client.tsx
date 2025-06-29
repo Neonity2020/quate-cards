@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { QuoteCard } from "@/components/quote-card"
 import { QuoteFilter } from "@/components/quote-filter"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { Button } from "@/components/ui/button"
+import SessionData from "./session-data"
 
 interface Quote {
   id: number
@@ -29,7 +31,7 @@ interface QuotesData {
 const ITEMS_PER_PAGE = 4
 
 export default function QuotesCardsClient() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const [quotesData, setQuotesData] = useState<QuotesData | null>(null)
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>("全部")
@@ -39,6 +41,7 @@ export default function QuotesCardsClient() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showSessionData, setShowSessionData] = useState(false)
 
   // 计算分页数据
   const totalPages = Math.ceil(filteredQuotes.length / ITEMS_PER_PAGE)
@@ -156,6 +159,29 @@ export default function QuotesCardsClient() {
     }
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut({ callbackUrl: "/" })
+    } catch (error) {
+      console.error("登出失败:", error)
+    }
+  }
+
+  const handleUpdateSession = async () => {
+    if (session?.user) {
+      try {
+        await update({
+          user: {
+            ...session.user,
+            name: `更新后的 ${session.user.name}`
+          }
+        })
+      } catch (error) {
+        console.error("更新 session 失败:", error)
+      }
+    }
+  }
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -181,6 +207,43 @@ export default function QuotesCardsClient() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">世界名言卡片</h1>
           <p className="text-gray-600">探索古今中外的智慧名言</p>
+          
+          {/* 用户信息和操作按钮 */}
+          <div className="mt-6 flex justify-center items-center gap-4">
+            <div className="text-sm text-gray-600">
+              欢迎，{session.user?.name || session.user?.email}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSessionData(!showSessionData)}
+              >
+                {showSessionData ? "隐藏" : "显示"} Session 数据
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleUpdateSession}
+              >
+                更新 Session
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleSignOut}
+              >
+                登出
+              </Button>
+            </div>
+          </div>
+
+          {/* Session 数据显示 */}
+          {showSessionData && (
+            <div className="mt-6 max-w-2xl mx-auto">
+              <SessionData session={session} />
+            </div>
+          )}
         </div>
 
         {loading && (
