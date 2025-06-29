@@ -49,7 +49,7 @@ const storage = createStorage({
 })
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: !!process.env.AUTH_DEBUG,
+  debug: true,
   theme: { logo: "https://authjs.dev/img/logo-sm.png" },
   adapter: UnstorageAdapter(storage),
   providers: [
@@ -68,7 +68,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // Discord,
     // Dropbox,
     // Facebook,
-    GitHub,
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID!,
+      clientSecret: process.env.AUTH_GITHUB_SECRET!,
+    }),
     // GitLab,
     // Google,
     // Hubspot,

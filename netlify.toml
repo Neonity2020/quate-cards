@@ -1,0 +1,30 @@
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# 重定向配置 - 处理Next.js路由
+[[redirects]]
+  from = "/auth/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+
+# 处理静态资源
+[[redirects]]
+  from = "/_next/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+
+# 处理API路由
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+
+# 处理所有其他路由
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200 
