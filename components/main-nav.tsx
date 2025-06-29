@@ -58,6 +58,21 @@ export function MainNav() {
               Client Side
             </NavigationMenuLink>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger className="px-2">
+              名言卡片
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                <ListItem href="/quotes-cards" title="完整版本">
+                  需要登录的完整名言卡片应用。
+                </ListItem>
+                <ListItem href="/quotes-cards/demo" title="演示版本">
+                  无需登录的名言卡片演示。
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </div>
